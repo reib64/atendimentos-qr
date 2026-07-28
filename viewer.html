@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Atendimento</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 16px; background: #f7f7f7; color: #222; }
+  h2 { margin-bottom: 4px; }
+  .atualizado { color: #666; font-size: 13px; margin-bottom: 20px; }
+  table { border-collapse: collapse; width: 100%; max-width: 700px; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; vertical-align: middle; }
+  th { background: #eee; }
+  .valor { text-align: center; font-weight: bold; }
+  .imagem-item img { max-width: 90px; max-height: 90px; border-radius: 6px; }
+  .erro { color: #b00020; font-weight: bold; }
+  .vazio { color: #888; font-style: italic; }
+</style>
+</head>
+<body>
+
+<h2>Atendimento</h2>
+<div id="conteudo">Carregando...</div>
+
+<script>
+async function carregar() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const el = document.getElementById('conteudo');
+
+  if (!id) {
+    el.innerHTML = '<p class="erro">Nenhum ID informado no link.</p>';
+    return;
+  }
+
+  try {
+    const resp = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest');
+    if (!resp.ok) {
+      el.innerHTML = '<p class="erro">Não foi possível carregar o atendimento (status ' + resp.status + ').</p>';
+      return;
+    }
+    const data = await resp.json();
+    const itens = (data.record && data.record.items) || [];
+
+    if (itens.length === 0) {
+      el.innerHTML = '<p class="vazio">Nenhum ajuste registrado ainda.</p>';
+      return;
+    }
+
+    let html = '<table><tr><th>Código</th><th>Tópico</th><th>Ajuste</th></tr>';
+    itens.forEach(item => {
+      html += '<tr>';
+      html += '<td>' + (item.codigo || '') + '</td>';
+      html += '<td>' + (item.nome || '') + '</td>';
+      if (item.imagem_base64) {
+        html += '<td class="imagem-item"><img src="data:image/' + (item.imagem_tipo || 'png') +
+                ';base64,' + item.imagem_base64 + '" alt="' + (item.nome || '') + '"></td>';
+      } else {
+        html += '<td class="valor">' + (item.valor || '') + '%</td>';
+      }
+      html += '</tr>';
+    });
+    html += '</table>';
+
+    el.innerHTML = '<div class="atualizado">ID: ' + id + '</div>' + html;
+  } catch (e) {
+    el.innerHTML = '<p class="erro">Erro ao carregar: ' + e.message + '</p>';
+  }
+}
+carregar();
+</script>
+
+</body>
+</html>
