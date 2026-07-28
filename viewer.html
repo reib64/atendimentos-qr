@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -51,9 +52,15 @@ async function carregar() {
       html += '<tr>';
       html += '<td>' + (item.codigo || '') + '</td>';
       html += '<td>' + (item.nome || '') + '</td>';
-      if (item.imagem_base64) {
-        html += '<td class="imagem-item"><img src="data:image/' + (item.imagem_tipo || 'png') +
-                ';base64,' + item.imagem_base64 + '" alt="' + (item.nome || '') + '"></td>';
+      if (item.imagens && item.imagens.length > 0) {
+        html += '<td class="imagem-item">';
+        item.imagens.forEach(img => {
+          html += '<div style="display:inline-block;text-align:center;margin:4px;">' +
+                  '<img src="data:image/' + (img.tipo || 'png') + ';base64,' + img.base64 + '" alt="' + (img.rotulo || '') + '">' +
+                  '<div style="font-size:11px;color:#555;">' + (img.rotulo || '') + '</div>' +
+                  '</div>';
+        });
+        html += '</td>';
       } else {
         html += '<td class="valor">' + (item.valor || '') + '%</td>';
       }
