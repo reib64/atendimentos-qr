@@ -46,26 +46,36 @@ async function carregar() {
       return;
     }
 
-    let html = '<table><tr><th>Código</th><th>Tópico</th><th>Ajuste</th></tr>';
+    let html = '';
     itens.forEach(item => {
-      html += '<tr>';
-      html += '<td>' + (item.codigo || '') + '</td>';
-      html += '<td>' + (item.nome || '') + '</td>';
-      if (item.imagens && item.imagens.length > 0) {
-        html += '<td class="imagem-item">';
-        item.imagens.forEach(img => {
-          html += '<div style="display:inline-block;text-align:center;margin:4px;">' +
-                  '<img src="' + img.url + '" alt="' + (img.rotulo || '') + '">' +
-                  '<div style="font-size:11px;color:#555;">' + (img.rotulo || '') + '</div>' +
-                  '</div>';
+      if (item.itens && item.itens.length > 0) {
+        // Bloco agrupado por tópico: texto único + todas as imagens dos itens marcados
+        html += '<div style="background:#fff;border:1px solid #ccc;border-radius:8px;padding:14px;margin-bottom:16px;max-width:700px;">';
+        html += '<h3 style="margin:0 0 8px 0;">Tópico ' + (item.topico || '') + ' — ' + (item.nome_topico || '') + '</h3>';
+        if (item.texto) {
+          html += '<p style="white-space:pre-wrap;line-height:1.5;color:#333;">' + item.texto + '</p>';
+        } else {
+          html += '<p class="vazio">Texto do decreto ainda não cadastrado.</p>';
+        }
+        html += '<div style="margin-top:10px;">';
+        item.itens.forEach(sub => {
+          (sub.imagens || []).forEach(img => {
+            html += '<div style="display:inline-block;text-align:center;margin:4px;">' +
+                    '<img src="' + img.url + '" alt="' + (img.rotulo || '') + '">' +
+                    '<div style="font-size:11px;color:#555;">' + (sub.codigo || '') + ' ' + (img.rotulo || '') + '</div>' +
+                    '</div>';
+          });
         });
-        html += '</td>';
+        html += '</div></div>';
       } else {
-        html += '<td class="valor">' + (item.valor || '') + '%</td>';
+        // Item normal com percentual
+        html += '<table style="max-width:700px;margin-bottom:6px;"><tr>' +
+                '<td style="border:1px solid #ccc;padding:8px 10px;width:80px;">' + (item.codigo || '') + '</td>' +
+                '<td style="border:1px solid #ccc;padding:8px 10px;">' + (item.nome || '') + '</td>' +
+                '<td class="valor" style="border:1px solid #ccc;padding:8px 10px;width:80px;">' + (item.valor || '') + '%</td>' +
+                '</tr></table>';
       }
-      html += '</tr>';
     });
-    html += '</table>';
 
     el.innerHTML = '<div class="atualizado">ID: ' + id + '</div>' + html;
   } catch (e) {
