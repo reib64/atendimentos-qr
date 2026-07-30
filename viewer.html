@@ -61,7 +61,7 @@ async function carregar() {
         item.itens.forEach(sub => {
           (sub.imagens || []).forEach(img => {
             html += '<div style="display:inline-block;text-align:center;margin:4px;">' +
-                    '<img src="' + img.url + '" alt="' + (img.rotulo || '') + '">' +
+                    '<img src="' + img.url + '" alt="' + (img.rotulo || '') + '" style="max-width:90px;max-height:90px;border-radius:6px;">' +
                     '<div style="font-size:11px;color:#555;">' + (sub.codigo || '') + ' ' + (img.rotulo || '') + '</div>' +
                     '</div>';
           });
